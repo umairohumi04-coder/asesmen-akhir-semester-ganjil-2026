@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AAS ONLINE - SMA NEGERI 1 RAJABASA</title>
+    <!-- Tailwind CSS untuk Desain Modern -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              navy: { 600: '#1e3a8a', 700: '#1e293b', 800: '#0f172a', 900: '#020617' },
+              accent: { yellow: '#facc15' }
+            }
+          }
+        }
+      }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Firebase SDK (Sesuai script tag yang Anda salin tadi) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // TEMPELKAN KODE FIREBASE CONFIG ANDA DI SINI NANTI
+        const firebaseConfig = {
+ apiKey: "AIzaSyCbyf0KPRmBxca1iAZ_oKMbsMGsMmrR3xA",
+    authDomain: "asesmen-akhir-semester-ganjil.firebaseapp.com",
+    projectId: "asesmen-akhir-semester-ganjil",
+    storageBucket: "asesmen-akhir-semester-ganjil.firebasestorage.app",
+    messagingSenderId: "901544277653",
+    appId: "1:901544277653:web:e30285c3fa8ce4b7278d9c",
+    measurementId: "G-B5SJ8P4ET7"
+            appId: "1:12345:web:abcde"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        window.db = db;
+        window.firebaseReady = true;
+        console.log("Firebase Terhubung ke AAS Online!");
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
+    <div id="app" class="flex-1 flex flex-col">
+        <!-- Tampilan Loading Awal -->
+        <div class="flex-1 flex items-center justify-center p-6">
+            <div class="text-center bg-white p-8 rounded-2xl shadow-xl border border-slate-100 max-w-md w-full">
+                <div class="w-16 h-16 bg-blue-900 text-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4 font-bold text-2xl shadow-md">
+                    AAS
+                </div>
+                <h1 class="text-xl font-bold text-blue-900 mb-2">AAS ONLINE</h1>
+                <p class="text-slate-600 text-sm mb-6">SMA NEGERI 1 RAJABASA</p>
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900 mx-auto"></div>
+                <p class="text-xs text-slate-400 mt-4">Memuat sistem asesmen...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Utama Tampilan & Logika -->
+    <script>
+        // Simulasi Tampilan Portal Sekolah
+        setTimeout(() => {
+            document.getElementById('app').innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-4">
+                    <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md w-full border border-white/20 text-center">
+                        <div class="w-20 h-20 bg-blue-900 text-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4 font-extrabold text-3xl shadow-lg border-2 border-yellow-400">
+                            S
+                        </div>
+                        <h2 class="text-2xl font-black text-blue-900 tracking-wide">AAS ONLINE</h2>
+                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">SMA NEGERI 1 RAJABASA</p>
+                        
+                        <div class="mt-8 space-y-4 text-left">
+                            <div>
+                                <label class="text-xs font-bold text-slate-700 block mb-1">Username / NISN</label>
+                                <input type="text" id="username" placeholder="Masukkan username..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900 text-sm">
+                            </div>
+                            <div>
+                                <label class="text-xs font-bold text-slate-700 block mb-1">Password</label>
+                                <input type="password" id="password" placeholder="Masukkan password..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900 text-sm">
+                            </div>
+                            <button onclick="alert('Silakan masukkan konfigurasi Firebase Anda pada kode editor agar sistem login aktif sepenuhnya.')" class="w-full bg-blue-900 hover:bg-blue-800 text-yellow-400 font-bold py-3.5 rounded-xl shadow-lg transition duration-200 text-sm uppercase tracking-wider">
+                                Masuk Aplikasi Ujian
+                            </button>
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-slate-100 text-xs text-slate-400">
+                            Panitia Asesmen Akhir Semester &copy; 2026 SMAN 1 Rajabasa
+                        </div>
+                    </div>
+                </div>
+            `;
+        }, 1000);
+    </script>
+</body>
+</html>
