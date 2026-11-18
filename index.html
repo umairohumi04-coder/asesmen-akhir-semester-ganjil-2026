@@ -1,98 +1,662 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AAS ONLINE - SMA NEGERI 1 RAJABASA</title>
-    <!-- Tailwind CSS untuk Desain Modern -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              navy: { 600: '#1e3a8a', 700: '#1e293b', 800: '#0f172a', 900: '#020617' },
-              accent: { yellow: '#facc15' }
-            }
-          }
-        }
-      }
-    </script>
-    <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Firebase SDK (Sesuai script tag yang Anda salin tadi) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, setDoc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>CBT AAS ONLINE - SMAN 1 RAJABASA</title>
+  <!-- Library SheetJS untuk Import & Export Excel (.xlsx) -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+  <style>
+    :root {
+      --primary: #0f294a;
+      --secondary: #1d4ed8;
+      --accent: #f59e0b;
+      --danger: #dc2626;
+      --success: #16a34a;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+    }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { margin: 0; background: var(--bg); color: var(--text); user-select: none; }
+    .hidden { display: none !important; }
+    
+    /* Login Screen */
+    .login-wrapper {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, #09192f 0%, #163b6b 100%); padding: 16px;
+    }
+    .login-card {
+      background: var(--card); width: 100%; max-width: 420px; border-radius: 16px;
+      padding: 32px 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3); text-align: center;
+    }
+    .logo-badge {
+      width: 64px; height: 64px; background: var(--primary); color: var(--accent);
+      font-size: 28px; font-weight: bold; border-radius: 14px; display: inline-flex;
+      align-items: center; justify-content: center; margin-bottom: 12px; border: 2px solid var(--accent);
+    }
+    .login-card h1 { margin: 0; font-size: 22px; color: var(--primary); }
+    .login-card p { margin: 4px 0 24px; font-size: 13px; color: #64748b; font-weight: 600; }
+    .form-group { text-align: left; margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
+    .form-control {
+      width: 100%; padding: 12px 14px; border: 1.5px solid #cbd5e1; border-radius: 10px;
+      font-size: 15px; outline: none; transition: 0.2s;
+    }
+    .form-control:focus { border-color: var(--secondary); }
+    .btn {
+      width: 100%; padding: 13px; border: none; border-radius: 10px; font-size: 15px;
+      font-weight: 700; cursor: pointer; transition: 0.2s; display: inline-flex;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: #1e3a8a; }
+    .btn-success { background: var(--success); color: #fff; width: auto; padding: 10px 16px; font-size: 13px; }
+    .btn-danger { background: var(--danger); color: #fff; width: auto; padding: 8px 14px; font-size: 12px; }
+    .btn-warning { background: var(--accent); color: #000; width: auto; padding: 8px 14px; font-size: 12px; }
 
-        // TEMPELKAN KODE FIREBASE CONFIG ANDA DI SINI NANTI
-        const firebaseConfig = {
- apiKey: "AIzaSyCbyf0KPRmBxca1iAZ_oKMbsMGsMmrR3xA",
-    authDomain: "asesmen-akhir-semester-ganjil.firebaseapp.com",
-    projectId: "asesmen-akhir-semester-ganjil",
-    storageBucket: "asesmen-akhir-semester-ganjil.firebasestorage.app",
-    messagingSenderId: "901544277653",
-    appId: "1:901544277653:web:e30285c3fa8ce4b7278d9c",
-    measurementId: "G-B5SJ8P4ET7"
-            appId: "1:12345:web:abcde"
-        };
+    /* Navbar & Layout Dashboard */
+    .navbar {
+      background: var(--primary); color: #fff; padding: 14px 20px; display: flex;
+      justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100;
+    }
+    .navbar-brand { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 10px; }
+    .container { max-width: 1100px; margin: 20px auto; padding: 0 16px; }
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 20px; padding-bottom: 4px; }
+    .tab-btn {
+      padding: 10px 16px; border: none; background: #e2e8f0; color: #334155;
+      border-radius: 8px; font-weight: 600; cursor: pointer; white-space: nowrap; font-size: 13px;
+    }
+    .tab-btn.active { background: var(--primary); color: #fff; }
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        window.db = db;
-        window.firebaseReady = true;
-        console.log("Firebase Terhubung ke AAS Online!");
-    </script>
+    /* Cards & Tables */
+    .card {
+      background: var(--card); border-radius: 12px; padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06); margin-bottom: 20px;
+    }
+    .card h3 { margin-top: 0; font-size: 17px; color: var(--primary); border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+    .stat-box {
+      background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; text-align: center;
+    }
+    .stat-box h2 { margin: 0; font-size: 28px; color: var(--secondary); }
+    .stat-box span { font-size: 12px; color: #64748b; font-weight: 600; }
+
+    .table-responsive { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f8fafc; color: var(--primary); font-weight: 700; }
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; }
+    .badge-ok { background: #dcfce7; color: #166534; }
+    .badge-warn { background: #fef3c7; color: #92400e; }
+    .badge-lock { background: #fee2e2; color: #991b1b; }
+
+    /* Exam Frame */
+    .exam-header {
+      background: var(--primary); color: #fff; padding: 12px 16px; display: flex;
+      justify-content: space-between; align-items: center; position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    }
+    .timer-box {
+      background: var(--danger); color: #fff; padding: 6px 14px; border-radius: 8px;
+      font-weight: 800; font-size: 16px; letter-spacing: 1px;
+    }
+    .exam-body { margin-top: 64px; height: calc(100vh - 64px); width: 100%; }
+    iframe { width: 100%; height: 100%; border: none; }
+    
+    /* Warning Overlay */
+    .lock-overlay {
+      position: fixed; inset: 0; background: rgba(15, 23, 42, 0.96); color: #fff;
+      z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 24px;
+    }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans">
-    <div id="app" class="flex-1 flex flex-col">
-        <!-- Tampilan Loading Awal -->
-        <div class="flex-1 flex items-center justify-center p-6">
-            <div class="text-center bg-white p-8 rounded-2xl shadow-xl border border-slate-100 max-w-md w-full">
-                <div class="w-16 h-16 bg-blue-900 text-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4 font-bold text-2xl shadow-md">
-                    AAS
-                </div>
-                <h1 class="text-xl font-bold text-blue-900 mb-2">AAS ONLINE</h1>
-                <p class="text-slate-600 text-sm mb-6">SMA NEGERI 1 RAJABASA</p>
-                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-900 mx-auto"></div>
-                <p class="text-xs text-slate-400 mt-4">Memuat sistem asesmen...</p>
-            </div>
-        </div>
+<body oncontextmenu="return false;">
+
+<!-- 1. HALAMAN LOGIN -->
+<div id="view-login" class="login-wrapper">
+  <div class="login-card">
+    <div class="logo-badge">S</div>
+    <h1>AAS ONLINE</h1>
+    <p>SMA NEGERI 1 RAJABASA</p>
+    <form id="login-form">
+      <div class="form-group">
+        <label>Username / NISN Peserta</label>
+        <input type="text" id="login-user" class="form-control" placeholder="Masukkan NISN / Username" required autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-pass" class="form-control" placeholder="Masukkan Password" required />
+      </div>
+      <button type="submit" class="btn btn-primary">MASUK APLIKASI UJIAN</button>
+    </form>
+    <div style="margin-top: 20px; font-size: 11px; color: #94a3b8;">
+      Panitia Asesmen Akhir Semester &copy; 2026 SMAN 1 Rajabasa
+    </div>
+  </div>
+</div>
+
+<!-- 2. DASHBOARD ADMIN & PANITIA -->
+<div id="view-admin" class="hidden">
+  <div class="navbar">
+    <div class="navbar-brand">
+      <span>🛡️ PANEL CBT</span>
+      <span id="role-badge" class="badge badge-warn">ADMIN</span>
+    </div>
+    <button onclick="logout()" class="btn btn-danger">Keluar</button>
+  </div>
+
+  <div class="container">
+    <!-- Ringkasan Statistik -->
+    <div class="grid-2" style="margin-bottom: 20px;">
+      <div class="stat-box">
+        <h2 id="stat-total">0</h2>
+        <span>TOTAL PESERTA TERDAFTAR</span>
+      </div>
+      <div class="stat-box">
+        <h2 id="stat-aktif" style="color: #16a34a;">0</h2>
+        <span>SEDANG / SELESAI UJIAN</span>
+      </div>
+      <div class="stat-box">
+        <h2 id="stat-langgar" style="color: #dc2626;">0</h2>
+        <span>TERKUNCI / PELANGGARAN</span>
+      </div>
     </div>
 
-    <!-- Script Utama Tampilan & Logika -->
-    <script>
-        // Simulasi Tampilan Portal Sekolah
-        setTimeout(() => {
-            document.getElementById('app').innerHTML = `
-                <div class="min-h-screen bg-gradient-to-br from-blue-900 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-4">
-                    <div class="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-md w-full border border-white/20 text-center">
-                        <div class="w-20 h-20 bg-blue-900 text-yellow-400 rounded-2xl flex items-center justify-center mx-auto mb-4 font-extrabold text-3xl shadow-lg border-2 border-yellow-400">
-                            S
-                        </div>
-                        <h2 class="text-2xl font-black text-blue-900 tracking-wide">AAS ONLINE</h2>
-                        <p class="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-1">SMA NEGERI 1 RAJABASA</p>
-                        
-                        <div class="mt-8 space-y-4 text-left">
-                            <div>
-                                <label class="text-xs font-bold text-slate-700 block mb-1">Username / NISN</label>
-                                <input type="text" id="username" placeholder="Masukkan username..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900 text-sm">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-slate-700 block mb-1">Password</label>
-                                <input type="password" id="password" placeholder="Masukkan password..." class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-900 text-sm">
-                            </div>
-                            <button onclick="alert('Silakan masukkan konfigurasi Firebase Anda pada kode editor agar sistem login aktif sepenuhnya.')" class="w-full bg-blue-900 hover:bg-blue-800 text-yellow-400 font-bold py-3.5 rounded-xl shadow-lg transition duration-200 text-sm uppercase tracking-wider">
-                                Masuk Aplikasi Ujian
-                            </button>
-                        </div>
-                        <div class="mt-6 pt-6 border-t border-slate-100 text-xs text-slate-400">
-                            Panitia Asesmen Akhir Semester &copy; 2026 SMAN 1 Rajabasa
-                        </div>
-                    </div>
-                </div>
-            `;
-        }, 1000);
-    </script>
+    <!-- Menu Navigasi Tab -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('tab-monitor', this)">📡 Monitoring & Panitia</button>
+      <button id="menu-setting" class="tab-btn" onclick="switchTab('tab-setting', this)">⚙️ Pengaturan Ujian & Soal</button>
+      <button id="menu-siswa" class="tab-btn" onclick="switchTab('tab-siswa', this)">👥 Data Siswa (Import Excel)</button>
+    </div>
+
+    <!-- TAB 1: MONITORING (Bisa diakses Admin & Panitia) -->
+    <div id="tab-monitor" class="card">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+        <h3 style="margin:0; border:none; padding:0;">Pemantauan Peserta & Reset Akun</h3>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="search-siswa" class="form-control" style="padding:8px 12px; font-size:13px; width:200px;" placeholder="Cari NISN / Nama..." onkeyup="renderTable()" />
+          <button onclick="exportExcel()" class="btn btn-success">📥 Download Rekap Excel</button>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>NISN</th>
+              <th>Nama Siswa</th>
+              <th>Kelas</th>
+              <th>Status</th>
+              <th>Pelanggaran</th>
+              <th>Aksi Panitia</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-monitor"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- TAB 2: PENGATURAN SOAL & WAKTU (Khusus Admin) -->
+    <div id="tab-setting" class="card hidden">
+      <h3>Konfigurasi Ujian Aktif</h3>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Nama Mata Pelajaran</label>
+          <input type="text" id="cfg-mapel" class="form-control" placeholder="Contoh: Biologi Kelas XI" />
+        </div>
+        <div class="form-group">
+          <label>Durasi Ujian (Menit)</label>
+          <input type="number" id="cfg-durasi" class="form-control" value="90" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Link Google Form Soal (Wajib berakhiran /viewform?embedded=true atau link biasa)</label>
+        <input type="url" id="cfg-link" class="form-control" placeholder="https://docs.google.com/forms/d/e/..." />
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Token Masuk Ujian (Opsional)</label>
+          <input type="text" id="cfg-token" class="form-control" placeholder="Contoh: BIO2026" />
+        </div>
+        <div class="form-group">
+          <label>Batas Maksimal Keluar Aplikasi (Anti-Curang)</label>
+          <input type="number" id="cfg-max-warn" class="form-control" value="3" />
+        </div>
+      </div>
+      <button onclick="saveSettings()" class="btn btn-primary" style="max-width: 240px;">💾 Simpan Pengaturan</button>
+    </div>
+
+    <!-- TAB 3: DATA SISWA & IMPORT EXCEL (Khusus Admin) -->
+    <div id="tab-siswa" class="card hidden">
+      <h3>Import Data 500 Siswa dari Excel (.xlsx)</h3>
+      <p style="font-size: 13px; color: #475569;">
+        Siapkan file Excel dengan judul kolom di baris pertama: <b>NISN</b>, <b>NAMA</b>, <b>KELAS</b>. 
+        Semua siswa otomatis menggunakan password seragam: <b>10825076</b>.
+      </p>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;">
+        <input type="file" id="excel-file" accept=".xlsx, .xls, .csv" class="form-control" style="max-width: 320px;" />
+        <button onclick="importExcel()" class="btn btn-success">📤 Unggah & Proses Excel</button>
+        <button onclick="downloadTemplateExcel()" class="btn btn-warning">📄 Unduh Format Template Excel</button>
+      </div>
+      <hr style="border:0; border-top:1px solid #e2e8f0; margin:16px 0;" />
+      <button onclick="resetAllData()" class="btn btn-danger">🗑️ Hapus Semua Data Peserta (Reset Sistem)</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. HALAMAN KONFIRMASI SISWA SEBELUM MULAI -->
+<div id="view-pre-exam" class="login-wrapper hidden">
+  <div class="login-card" style="max-width: 480px; text-align: left;">
+    <h2 style="margin-top:0; color:var(--primary); text-align:center;">KONFIRMASI DATA PESERTA</h2>
+    <div style="background:#f8fafc; padding:14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:16px; font-size:14px;">
+      <div><b>NISN:</b> <span id="info-nisn">-</span></div>
+      <div><b>Nama:</b> <span id="info-nama">-</span></div>
+      <div><b>Kelas:</b> <span id="info-kelas">-</span></div>
+      <hr style="border:0; border-top:1px solid #cbd5e1; margin:8px 0;">
+      <div><b>Mata Pelajaran:</b> <span id="info-mapel">-</span></div>
+      <div><b>Durasi Waktu:</b> <span id="info-durasi">-</span> Menit</div>
+    </div>
+    <div id="token-box" class="form-group hidden">
+      <label>Masukkan Token Ujian dari Pengawas</label>
+      <input type="text" id="input-token" class="form-control" placeholder="Ketik Token..." style="text-transform:uppercase;" />
+    </div>
+    <div style="background:#fef2f2; color:#991b1b; padding:12px; border-radius:8px; font-size:12px; margin-bottom:16px;">
+      <b>PERATURAN ANTI-CURANG:</b><br>
+      1. Aplikasi akan masuk mode Layar Penuh (Fullscreen).<br>
+      2. Dilarang keluar aplikasi, membuka tab baru, atau split-screen.<br>
+      3. Jika melanggar batas peringatan, akun otomatis <b>TERKUNCI</b>.
+    </div>
+    <button onclick="startExam()" class="btn btn-primary">MULAI KERJAKAN SEKARANG</button>
+  </div>
+</div>
+
+<!-- 4. RUANG UJIAN SISWA (ANTI-CURANG + TIMER) -->
+<div id="view-exam" class="hidden">
+  <div class="exam-header">
+    <div>
+      <div id="exam-title" style="font-weight:700; font-size:14px;">UJIAN BERLANGSUNG</div>
+      <div id="exam-student" style="font-size:11px; color:#cbd5e1;">Siswa</div>
+    </div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div id="exam-timer" class="timer-box">00:00</div>
+      <button onclick="finishExam()" class="btn btn-success" style="padding:8px 12px;">Selesai</button>
+    </div>
+  </div>
+  <div class="exam-body">
+    <iframe id="exam-frame" src=""></iframe>
+  </div>
+</div>
+
+<!-- OVERLAY TERKUNCI (JIKA CURANG / KELUAR APLIKASI) -->
+<div id="lock-screen" class="lock-overlay hidden">
+  <div style="font-size: 60px; margin-bottom: 10px;">🚫</div>
+  <h1 style="color: #f87171; margin: 0;">AKSES UJIAN TERKUNCI!</h1>
+  <p id="lock-reason" style="max-width: 420px; color: #e2e8f0; line-height: 1.5;">
+    Sistem mendeteksi Anda keluar dari halaman ujian atau berpindah aplikasi melebihi batas toleransi.
+  </p>
+  <div style="background: #1e293b; padding: 16px; border-radius: 12px; margin-top: 12px; border: 1px solid #475569;">
+    <p style="margin:0 0 10px; font-size:13px;">Silakan lapor ke <b>Panitia / Pengawas Ulangan</b> untuk membuka kunci:</p>
+    <input type="password" id="unlock-pin" class="form-control" placeholder="PIN Pengawas (1234)" style="text-align:center; margin-bottom:10px;" />
+    <button onclick="unlockByPanitia()" class="btn btn-warning" style="width:100%;">Buka Kunci Sekarang</button>
+  </div>
+</div>
+
+<script>
+  // --- INISIALISASI DATA & KONFIGURASI DEFAULT ---
+  const PASS_SISWA = "10825076";
+  const PIN_PENGAWAS = "1234"; // PIN cepat untuk pengawas di ruang ujian
+
+  let config = JSON.parse(localStorage.getItem("cbt_config")) || {
+    mapel: "Asesmen Akhir Semester Ganjil",
+    durasi: 90,
+    link: "https://docs.google.com/forms",
+    token: "",
+    maxWarn: 3
+  };
+
+  let students = JSON.parse(localStorage.getItem("cbt_students")) || [
+    { nisn: "1234567890", nama: "Contoh Siswa 1", kelas: "XI IPA 1", status: "Belum Mulai", warn: 0, waktuSelesai: "-" }
+  ];
+
+  let currentUser = null;
+  let timerInterval = null;
+  let remainingSeconds = 0;
+  let isExamActive = false;
+
+  // --- LOGIN HANDLER ---
+  document.getElementById("login-form").addEventListener("submit", function(e) {
+    e.preventDefault();
+    const user = document.getElementById("login-user").value.trim();
+    const pass = document.getElementById("login-pass").value.trim();
+
+    // 1. Login Admin Utama
+    if (user === "admin" && pass === "admin123") {
+      openDashboard("ADMIN");
+      return;
+    }
+
+    // 2. Login Panitia / Pengawas
+    if (user === "panitia" && pass === "panitia123") {
+      openDashboard("PANITIA");
+      return;
+    }
+
+    // 3. Login Siswa (NISN Angka + Password Seragam 10825076)
+    if (!/^\d+$/.test(user)) {
+      alert("Username / NISN siswa wajib berupa angka!");
+      return;
+    }
+    if (pass !== PASS_SISWA) {
+      alert("Password salah! Gunakan password ujian yang diberikan panitia.");
+      return;
+    }
+
+    // Cari data siswa di daftar import Excel, jika tidak ada tetap diizinkan masuk sebagai peserta tamu
+    let found = students.find(s => s.nisn === user);
+    if (!found) {
+      found = { nisn: user, nama: "Peserta NISN " + user, kelas: "Umum", status: "Belum Mulai", warn: 0, waktuSelesai: "-" };
+      students.push(found);
+      saveStudents();
+    }
+
+    if (found.status === "Terkunci") {
+      currentUser = found;
+      document.getElementById("lock-screen").classList.remove("hidden");
+      return;
+    }
+
+    currentUser = found;
+    showPreExam();
+  });
+
+  // --- FUNGSI DASHBOARD ADMIN & PANITIA ---
+  function openDashboard(role) {
+    document.getElementById("view-login").classList.add("hidden");
+    document.getElementById("view-admin").classList.remove("hidden");
+    document.getElementById("role-badge").innerText = role;
+
+    if (role === "PANITIA") {
+      document.getElementById("menu-setting").classList.add("hidden");
+      document.getElementById("menu-siswa").classList.add("hidden");
+    } else {
+      document.getElementById("menu-setting").classList.remove("hidden");
+      document.getElementById("menu-siswa").classList.remove("hidden");
+      // Isi form setting
+      document.getElementById("cfg-mapel").value = config.mapel;
+      document.getElementById("cfg-durasi").value = config.durasi;
+      document.getElementById("cfg-link").value = config.link;
+      document.getElementById("cfg-token").value = config.token;
+      document.getElementById("cfg-max-warn").value = config.maxWarn;
+    }
+    renderTable();
+  }
+
+  function switchTab(tabId, btn) {
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    ["tab-monitor", "tab-setting", "tab-siswa"].forEach(id => {
+      document.getElementById(id).classList.add("hidden");
+    });
+    document.getElementById(tabId).classList.remove("hidden");
+  }
+
+  function saveSettings() {
+    config = {
+      mapel: document.getElementById("cfg-mapel").value.trim() || "Ujian Sekolah",
+      durasi: parseInt(document.getElementById("cfg-durasi").value) || 90,
+      link: document.getElementById("cfg-link").value.trim(),
+      token: document.getElementById("cfg-token").value.trim().toUpperCase(),
+      maxWarn: parseInt(document.getElementById("cfg-max-warn").value) || 3
+    };
+    localStorage.setItem("cbt_config", JSON.stringify(config));
+    alert("Pengaturan ujian & link soal berhasil disimpan!");
+  }
+
+  function renderTable() {
+    const keyword = document.getElementById("search-siswa").value.toLowerCase();
+    const tbody = document.getElementById("tbody-monitor");
+    tbody.innerHTML = "";
+
+    let aktif = 0, langgar = 0;
+
+    students.forEach((s, index) => {
+      if (s.status === "Mengerjakan" || s.status === "Selesai") aktif++;
+      if (s.status === "Terkunci") langgar++;
+
+      if (s.nisn.includes(keyword) || s.nama.toLowerCase().includes(keyword) || s.kelas.toLowerCase().includes(keyword)) {
+        let badgeClass = "badge-warn";
+        if (s.status === "Selesai") badgeClass = "badge-ok";
+        if (s.status === "Terkunci") badgeClass = "badge-lock";
+
+        tbody.innerHTML += `
+          <tr>
+            <td><b>${s.nisn}</b></td>
+            <td>${s.nama}</td>
+            <td>${s.kelas}</td>
+            <td><span class="badge ${badgeClass}">${s.status}</span></td>
+            <td>${s.warn}x</td>
+            <td>
+              <button onclick="resetStudent(${index})" class="btn btn-warning">🔓 Reset / Buka Kunci</button>
+            </td>
+          </tr>
+        `;
+      }
+    });
+
+    document.getElementById("stat-total").innerText = students.length;
+    document.getElementById("stat-aktif").innerText = aktif;
+    document.getElementById("stat-langgar").innerText = langgar;
+  }
+
+  function resetStudent(idx) {
+    students[idx].status = "Belum Mulai";
+    students[idx].warn = 0;
+    saveStudents();
+    renderTable();
+    alert("Status siswa " + students[idx].nama + " berhasil di-reset!");
+  }
+
+  function saveStudents() {
+    localStorage.setItem("cbt_students", JSON.stringify(students));
+  }
+
+  // --- IMPORT & EXPORT EXCEL (SheetJS) ---
+  function downloadTemplateExcel() {
+    const ws = XLSX.utils.json_to_sheet([
+      { NISN: "0081234561", NAMA: "Ahmad Fauzi", KELAS: "XI IPA 1" },
+      { NISN: "0081234562", NAMA: "Siti Aminah", KELAS: "XI IPA 1" }
+    ]);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "DataSiswa");
+    XLSX.writeFile(wb, "Template_Peserta_CBT_SMAN1Rajabasa.xlsx");
+  }
+
+  function importExcel() {
+    const fileInput = document.getElementById("excel-file");
+    if (!fileInput.files.length) {
+      alert("Pilih file Excel (.xlsx) terlebih dahulu!");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, { type: "array" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet);
+
+      if (rows.length === 0) {
+        alert("File Excel kosong!");
+        return;
+      }
+
+      students = rows.map(r => ({
+        nisn: String(r.NISN || r.nisn || "").trim(),
+        nama: String(r.NAMA || r.Nama || r.nama || "Tanpa Nama").trim(),
+        kelas: String(r.KELAS || r.Kelas || r.kelas || "-").trim(),
+        status: "Belum Mulai",
+        warn: 0,
+        waktuSelesai: "-"
+      })).filter(s => s.nisn !== "");
+
+      saveStudents();
+      renderTable();
+      alert("Berhasil mengimpor " + students.length + " data siswa!");
+    };
+    reader.readAsArrayBuffer(fileInput.files[0]);
+  }
+
+  function exportExcel() {
+    const dataExport = students.map((s, i) => ({
+      No: i + 1,
+      NISN: s.nisn,
+      Nama_Siswa: s.nama,
+      Kelas: s.kelas,
+      Status_Ujian: s.status,
+      Jumlah_Pelanggaran: s.warn,
+      Waktu_Selesai: s.waktuSelesai
+    }));
+    const ws = XLSX.utils.json_to_sheet(dataExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "RekapUjian");
+    XLSX.writeFile(wb, "Rekap_Hasil_CBT_SMAN1Rajabasa.xlsx");
+  }
+
+  function resetAllData() {
+    if (confirm("Yakin ingin menghapus seluruh daftar siswa dan mereset sistem?")) {
+      students = [];
+      saveStudents();
+      renderTable();
+    }
+  }
+
+  // --- ALUR UJIAN SISWA & ANTI-CURANG ---
+  function showPreExam() {
+    document.getElementById("view-login").classList.add("hidden");
+    document.getElementById("view-pre-exam").classList.remove("hidden");
+
+    document.getElementById("info-nisn").innerText = currentUser.nisn;
+    document.getElementById("info-nama").innerText = currentUser.nama;
+    document.getElementById("info-kelas").innerText = currentUser.kelas;
+    document.getElementById("info-mapel").innerText = config.mapel;
+    document.getElementById("info-durasi").innerText = config.durasi;
+
+    if (config.token) {
+      document.getElementById("token-box").classList.remove("hidden");
+    }
+  }
+
+  function startExam() {
+    if (config.token) {
+      const inputTok = document.getElementById("input-token").value.trim().toUpperCase();
+      if (inputTok !== config.token) {
+        alert("Token ujian salah! Silakan tanyakan token kepada pengawas.");
+        return;
+      }
+    }
+
+    // Aktifkan Fullscreen
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen().catch(() => {});
+    }
+
+    document.getElementById("view-pre-exam").classList.add("hidden");
+    document.getElementById("view-exam").classList.remove("hidden");
+    document.getElementById("exam-title").innerText = config.mapel;
+    document.getElementById("exam-student").innerText = `${currentUser.nama} (${currentUser.nisn})`;
+    document.getElementById("exam-frame").src = config.link;
+
+    currentUser.status = "Mengerjakan";
+    saveStudents();
+    isExamActive = true;
+
+    // Jalankan Timer Hitung Mundur
+    remainingSeconds = config.durasi * 60;
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      remainingSeconds--;
+      updateTimerDisplay();
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        alert("Waktu ujian telah habis! Sistem otomatis mengakhiri sesi.");
+        finishExam(true);
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const m = Math.floor(remainingSeconds / 60);
+    const s = remainingSeconds % 60;
+    document.getElementById("exam-timer").innerText =
+      String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
+  }
+
+  // Deteksi Anti-Curang (Keluar Tab / Minimize / Pindah Aplikasi di HP)
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden && isExamActive) {
+      triggerViolation();
+    }
+  });
+
+  window.addEventListener("blur", function() {
+    if (isExamActive) {
+      triggerViolation();
+    }
+  });
+
+  function triggerViolation() {
+    if (!currentUser) return;
+    currentUser.warn += 1;
+    saveStudents();
+
+    if (currentUser.warn >= config.maxWarn) {
+      isExamActive = false;
+      clearInterval(timerInterval);
+      currentUser.status = "Terkunci";
+      saveStudents();
+      document.getElementById("lock-screen").classList.remove("hidden");
+    } else {
+      alert(`⚠️ PERINGATAN PELANGGARAN (${currentUser.warn}/${config.maxWarn})!\nAnda terdeteksi keluar dari aplikasi ujian. Jika mencapai ${config.maxWarn}x, ujian Anda akan TERKUNCI otomatis!`);
+    }
+  }
+
+  function unlockByPanitia() {
+    const pin = document.getElementById("unlock-pin").value.trim();
+    if (pin === PIN_PENGAWAS) {
+      currentUser.status = "Mengerjakan";
+      currentUser.warn = 0;
+      saveStudents();
+      document.getElementById("lock-screen").classList.add("hidden");
+      document.getElementById("unlock-pin").value = "";
+      isExamActive = true;
+      alert("Kunci dibuka oleh Pengawas. Siswa dapat melanjutkan ujian.");
+    } else {
+      alert("PIN Pengawas salah!");
+    }
+  }
+
+  function finishExam(force = false) {
+    if (!force && !confirm("Apakah Anda yakin sudah mengirimkan jawaban di formulir dan ingin mengakhiri ujian?")) {
+      return;
+    }
+    isExamActive = false;
+    clearInterval(timerInterval);
+    currentUser.status = "Selesai";
+    currentUser.waktuSelesai = new Date().toLocaleTimeString("id-ID");
+    saveStudents();
+
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    }
+    alert("Terima kasih! Sesi ujian Anda telah selesai dicatat.");
+    logout();
+  }
+
+  function logout() {
+    location.reload();
+  }
+</script>
 </body>
 </html>
