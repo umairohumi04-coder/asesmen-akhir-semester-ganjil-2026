@@ -177,30 +177,45 @@
 
     <!-- Menu Navigasi Tab -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('tab-mapel', this)">📚 Daftar Mapel & Buka/Tutup Soal</button>
+      <button class="tab-btn active" onclick="switchTab('tab-mapel', this)">📚 Daftar 17 Mapel & Buka/Tutup</button>
       <button class="tab-btn" onclick="switchTab('tab-monitor', this)">📡 Monitoring Peserta & Panitia</button>
-      <button id="menu-siswa" class="tab-btn" onclick="switchTab('tab-siswa', this)">👥 Data 500 Siswa (Import Excel)</button>
+      <button id="menu-siswa" class="tab-btn" onclick="switchTab('tab-siswa', this)">👥 Data 500 Siswa & 12 Rombel</button>
     </div>
 
     <!-- TAB 1: BANK LINK 17 MAPEL & KONTROL BUKA/TUTUP -->
     <div id="tab-mapel" class="card">
-      <h3>Kelola Daftar Mata Pelajaran & Status Buka/Tutup Soal</h3>
+      <h3>Kelola 17 Mata Pelajaran & Target Kelas</h3>
       
       <!-- Form Tambah Mapel (Hanya Admin) -->
       <div id="form-tambah-mapel" style="background:#f8fafc; padding:16px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:20px;">
-        <div style="font-weight:700; font-size:14px; color:var(--primary); margin-bottom:12px;">➕ Tambah / Siapkan Link Mata Pelajaran Baru</div>
+        <div style="font-weight:700; font-size:14px; color:var(--primary); margin-bottom:12px;">➕ Tambah / Siapkan Link Mata Pelajaran</div>
         <div class="grid-3">
           <div class="form-group">
             <label>Nama Mata Pelajaran</label>
-            <input type="text" id="m-nama" class="form-control" placeholder="Contoh: Biologi" />
+            <input type="text" id="m-nama" class="form-control" placeholder="Contoh: Biologi Kelas XI" />
           </div>
           <div class="form-group">
-            <label>Tingkat Kelas</label>
-            <select id="m-tingkat" class="form-control">
-              <option value="X">Kelas X (5 Rombel)</option>
-              <option value="XI">Kelas XI (4 Rombel)</option>
-              <option value="XII">Kelas XII (3 Rombel)</option>
-              <option value="SEMUA">Semua Tingkat (X, XI, XII)</option>
+            <label>Target Kelas / Rombel</label>
+            <select id="m-kelas" class="form-control">
+              <option value="SEMUA">Semua Kelas (X, XI, XII)</option>
+              <optgroup label="Kelas X (5 Rombel)">
+                <option value="X-1">X-1</option>
+                <option value="X-2">X-2</option>
+                <option value="X-3">X-3</option>
+                <option value="X-4">X-4</option>
+                <option value="X-5">X-5</option>
+              </optgroup>
+              <optgroup label="Kelas XI (4 Rombel)">
+                <option value="XI-1">XI-1</option>
+                <option value="XI-2">XI-2</option>
+                <option value="XI-3">XI-3</option>
+                <option value="XI-4">XI-4</option>
+              </optgroup>
+              <optgroup label="Kelas XII (3 Rombel)">
+                <option value="XII-1">XII-1</option>
+                <option value="XII-2">XII-2</option>
+                <option value="XII-3">XII-3</option>
+              </optgroup>
             </select>
           </div>
           <div class="form-group">
@@ -215,7 +230,7 @@
           </div>
           <div class="form-group">
             <label>Token Soal (Opsional)</label>
-            <input type="text" id="m-token" class="form-control" placeholder="Contoh: BIO11 (Kosongkan jika tanpa token)" />
+            <input type="text" id="m-token" class="form-control" placeholder="Contoh: BIO11" />
           </div>
         </div>
         <button onclick="tambahMapel()" class="btn btn-primary" style="max-width: 260px;">💾 Simpan ke Daftar Mapel</button>
@@ -228,7 +243,7 @@
             <tr>
               <th>No</th>
               <th>Mata Pelajaran</th>
-              <th>Tingkat</th>
+              <th>Target Kelas</th>
               <th>Durasi & Token</th>
               <th>Status Ujian</th>
               <th>Kontrol Buka / Tutup</th>
@@ -242,10 +257,16 @@
     <!-- TAB 2: MONITORING PESERTA (Admin & Panitia) -->
     <div id="tab-monitor" class="card hidden">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
-        <h3 style="margin:0; border:none; padding:0;">Pemantauan Peserta & Reset Akun</h3>
+        <h3 style="margin:0; border:none; padding:0;">Pemantauan Peserta & Rombel</h3>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <input type="text" id="search-siswa" class="form-control" style="padding:8px 12px; font-size:13px; width:200px;" placeholder="Cari NISN / Nama / Kelas..." onkeyup="renderTable()" />
-          <button onclick="exportExcel()" class="btn btn-success">📥 Download Rekap Excel</button>
+          <select id="filter-kelas" class="form-control" style="padding:8px 12px; font-size:13px; width:150px;" onchange="renderTable()">
+            <option value="">Semua Rombel</option>
+            <option value="X-1">X-1</option><option value="X-2">X-2</option><option value="X-3">X-3</option><option value="X-4">X-4</option><option value="X-5">X-5</option>
+            <option value="XI-1">XI-1</option><option value="XI-2">XI-2</option><option value="XI-3">XI-3</option><option value="XI-4">XI-4</option>
+            <option value="XII-1">XII-1</option><option value="XII-2">XII-2</option><option value="XII-3">XII-3</option>
+          </select>
+          <input type="text" id="search-siswa" class="form-control" style="padding:8px 12px; font-size:13px; width:180px;" placeholder="Cari NISN / Nama..." onkeyup="renderTable()" />
+          <button onclick="exportExcel()" class="btn btn-success">📥 Download Excel</button>
         </div>
       </div>
       <div class="table-responsive">
@@ -254,7 +275,7 @@
             <tr>
               <th>NISN</th>
               <th>Nama Siswa</th>
-              <th>Kelas</th>
+              <th>Kelas / Rombel</th>
               <th>Mapel Dikerjakan</th>
               <th>Status</th>
               <th>Pelanggaran</th>
@@ -266,11 +287,11 @@
       </div>
     </div>
 
-    <!-- TAB 3: DATA SISWA & IMPORT EXCEL (Khusus Admin) -->
+    <!-- TAB 3: DATA SISWA & IMPORT EXCEL -->
     <div id="tab-siswa" class="card hidden">
-      <h3>Import Data 500 Siswa dari Excel (.xlsx)</h3>
+      <h3>Import Data 500 Siswa (12 Rombel) dari Excel (.xlsx)</h3>
       <p style="font-size: 13px; color: #475569;">
-        Siapkan 1 file Excel untuk seluruh 12 rombel dengan kolom: <b>NISN</b>, <b>NAMA</b>, <b>KELAS</b> (Contoh: <code>X-1</code>, <code>XI-2</code>, <code>XII-3</code>). 
+        Pastikan kolom KELAS di Excel tertulis spesifik sesuai rombel (Contoh: <b>X-1</b>, <b>XI-2</b>, <b>XII-3</b>). 
         Password seluruh siswa seragam: <b>10825076</b>.
       </p>
       <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 16px;">
@@ -291,7 +312,7 @@
   </div>
 </div>
 
-<!-- 3. HALAMAN PILIH MAPEL & KONFIRMASI SISWA -->
+<!-- 3. HALAMAN PILIH MAPEL SISWA -->
 <div id="view-pre-exam" class="login-wrapper hidden">
   <div class="login-card" style="max-width: 520px; text-align: left;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -300,16 +321,15 @@
     </div>
     
     <div style="background:#f8fafc; padding:12px 14px; border-radius:10px; border:1px solid #e2e8f0; margin-bottom:16px; font-size:13px;">
-      <div><b>NISN:</b> <span id="info-nisn">-</span> | <b>Kelas:</b> <span id="info-kelas">-</span></div>
+      <div><b>NISN:</b> <span id="info-nisn">-</span> | <b>Kelas / Rombel:</b> <span id="info-kelas">-</span></div>
       <div><b>Nama Peserta:</b> <span id="info-nama">-</span></div>
     </div>
 
     <div style="font-weight:700; font-size:14px; color:var(--primary); margin-bottom:10px;">
-      Pilih Mata Pelajaran yang Sedang Dibuka:
+      Pilih Mata Pelajaran yang Dibuka untuk Kelas Anda:
     </div>
     <div id="list-mapel-siswa" style="margin-bottom: 16px;"></div>
 
-    <!-- Box Konfirmasi Token & Mulai (Muncul setelah siswa memilih salah satu mapel) -->
     <div id="konfirmasi-mulai-box" class="hidden" style="border-top:2px dashed #cbd5e1; padding-top:14px;">
       <div style="font-size:13px; margin-bottom:10px; color:#1e3a8a;">
         Anda memilih: <b id="selected-mapel-name">-</b> (<span id="selected-mapel-durasi">0</span> Menit)
@@ -319,14 +339,14 @@
         <input type="text" id="input-token" class="form-control" placeholder="Ketik Token..." style="text-transform:uppercase;" />
       </div>
       <div style="background:#fef2f2; color:#991b1b; padding:10px; border-radius:8px; font-size:11.5px; margin-bottom:12px;">
-        <b>PERATURAN ANTI-CURANG:</b> Layar penuh otomatis aktif. Dilarang keluar aplikasi, membuka tab baru, atau split-screen. Pelanggaran melebihi batas akan <b>MENGUNCI</b> ujian Anda!
+        <b>PERATURAN ANTI-CURANG:</b> Layar penuh otomatis aktif. Dilarang keluar aplikasi atau membuka tab lain. Pelanggaran akan <b>MENGUNCI</b> ujian Anda!
       </div>
       <button onclick="startExam()" class="btn btn-primary">🚀 MULAI KERJAKAN SEKARANG</button>
     </div>
   </div>
 </div>
 
-<!-- 4. RUANG UJIAN SISWA (ANTI-CURANG + TIMER) -->
+<!-- 4. RUANG UJIAN SISWA -->
 <div id="view-exam" class="hidden">
   <div class="exam-header">
     <div>
@@ -343,7 +363,7 @@
   </div>
 </div>
 
-<!-- OVERLAY TERKUNCI (JIKA CURANG / KELUAR APLIKASI) -->
+<!-- OVERLAY TERKUNCI -->
 <div id="lock-screen" class="lock-overlay hidden">
   <div style="font-size: 60px; margin-bottom: 10px;">🚫</div>
   <h1 style="color: #f87171; margin: 0;">AKSES UJIAN TERKUNCI!</h1>
@@ -351,28 +371,25 @@
     Sistem mendeteksi Anda keluar dari halaman ujian atau berpindah aplikasi melebihi batas toleransi.
   </p>
   <div style="background: #1e293b; padding: 16px; border-radius: 12px; margin-top: 12px; border: 1px solid #475569;">
-    <p style="margin:0 0 10px; font-size:13px;">Silakan lapor ke <b>Panitia / Pengawas Ulangan</b> untuk membuka kunci:</p>
+    <p style="margin:0 0 10px; font-size:13px;">Lapor ke <b>Panitia / Pengawas</b> untuk membuka kunci:</p>
     <input type="password" id="unlock-pin" class="form-control" placeholder="PIN Pengawas (1234)" style="text-align:center; margin-bottom:10px;" />
     <button onclick="unlockByPanitia()" class="btn btn-warning" style="width:100%;">Buka Kunci Sekarang</button>
   </div>
 </div>
 
 <script>
-  // --- KONFIGURASI DEFAULT ---
   const PASS_SISWA = "10825076";
   const PIN_PENGAWAS = "1234";
 
   let maxWarn = parseInt(localStorage.getItem("cbt_max_warn")) || 3;
 
-  // Daftar 17 Mata Pelajaran (Bisa ditambah/diubah oleh Admin)
   let subjects = JSON.parse(localStorage.getItem("cbt_subjects")) || [
-    { id: 1, nama: "Biologi", tingkat: "XI", durasi: 90, link: "https://docs.google.com/forms", token: "BIO11", aktif: true },
-    { id: 2, nama: "Fisika", tingkat: "X", durasi: 90, link: "https://docs.google.com/forms", token: "FIS10", aktif: false },
-    { id: 3, nama: "Koding & Kecerdasan Artifisial (KKA)", tingkat: "X", durasi: 60, link: "https://docs.google.com/forms", token: "", aktif: false }
+    { id: 1, nama: "Biologi Kelas XI", kelasTarget: "XI-1", durasi: 90, link: "https://docs.google.com/forms", token: "BIO11", aktif: true },
+    { id: 2, nama: "Fisika Kelas X", kelasTarget: "SEMUA", durasi: 90, link: "https://docs.google.com/forms", token: "FIS10", aktif: false }
   ];
 
   let students = JSON.parse(localStorage.getItem("cbt_students")) || [
-    { nisn: "1234567890", nama: "Contoh Siswa Kelas XI", kelas: "XI-1", mapel: "-", status: "Belum Mulai", warn: 0, waktuSelesai: "-" }
+    { nisn: "1234567890", nama: "Contoh Siswa", kelas: "XI-1", mapel: "-", status: "Belum Mulai", warn: 0, waktuSelesai: "-" }
   ];
 
   let currentUser = null;
@@ -382,7 +399,6 @@
   let remainingSeconds = 0;
   let isExamActive = false;
 
-  // --- LOGIN HANDLER ---
   document.getElementById("login-form").addEventListener("submit", function(e) {
     e.preventDefault();
     const user = document.getElementById("login-user").value.trim();
@@ -409,7 +425,7 @@
 
     let found = students.find(s => s.nisn === user);
     if (!found) {
-      found = { nisn: user, nama: "Peserta NISN " + user, kelas: "SEMUA", mapel: "-", status: "Belum Mulai", warn: 0, waktuSelesai: "-" };
+      found = { nisn: user, nama: "Peserta " + user, kelas: "X-1", mapel: "-", status: "Belum Mulai", warn: 0, waktuSelesai: "-" };
       students.push(found);
       saveStudents();
     }
@@ -424,7 +440,6 @@
     showPreExam();
   });
 
-  // --- DASHBOARD ADMIN & PANITIA ---
   function openDashboard(role) {
     currentRole = role;
     document.getElementById("view-login").classList.add("hidden");
@@ -452,10 +467,9 @@
     document.getElementById(tabId).classList.remove("hidden");
   }
 
-  // --- KELOLA 17 MAPEL & BUKA/TUTUP SOAL ---
   function tambahMapel() {
     const nama = document.getElementById("m-nama").value.trim();
-    const tingkat = document.getElementById("m-tingkat").value;
+    const kelasTarget = document.getElementById("m-kelas").value;
     const durasi = parseInt(document.getElementById("m-durasi").value) || 90;
     const link = document.getElementById("m-link").value.trim();
     const token = document.getElementById("m-token").value.trim().toUpperCase();
@@ -468,11 +482,11 @@
     subjects.push({
       id: Date.now(),
       nama: nama,
-      tingkat: tingkat,
+      kelasTarget: kelasTarget,
       durasi: durasi,
       link: link,
       token: token,
-      aktif: false // Default tertutup sampai admin membukanya
+      aktif: false
     });
 
     saveSubjects();
@@ -480,7 +494,7 @@
     document.getElementById("m-nama").value = "";
     document.getElementById("m-link").value = "";
     document.getElementById("m-token").value = "";
-    alert("Mata pelajaran berhasil ditambahkan ke daftar! Klik tombol BUKA SOAL saat ujian dimulai.");
+    alert("Mata pelajaran berhasil ditambahkan!");
   }
 
   function toggleStatusMapel(index) {
@@ -490,7 +504,7 @@
   }
 
   function hapusMapel(index) {
-    if (confirm("Hapus mata pelajaran " + subjects[index].nama + " dari daftar?")) {
+    if (confirm("Hapus mata pelajaran ini?")) {
       subjects.splice(index, 1);
       saveSubjects();
       renderMapelTable();
@@ -509,12 +523,12 @@
     subjects.forEach((m, i) => {
       if (m.aktif) aktifCount++;
       const statusBadge = m.aktif
-        ? `<span class="badge badge-ok">🟢 DIBUKA (AKTIF)</span>`
+        ? `<span class="badge badge-ok">🟢 DIBUKA</span>`
         : `<span class="badge badge-closed">🔒 DITUTUP</span>`;
 
       const toggleBtn = m.aktif
-        ? `<button onclick="toggleStatusMapel(${i})" class="btn btn-danger">Tutup Soal</button>`
-        : `<button onclick="toggleStatusMapel(${i})" class="btn btn-success">Buka Soal</button>`;
+        ? `<button onclick="toggleStatusMapel(${i})" class="btn btn-danger">Tutup</button>`
+        : `<button onclick="toggleStatusMapel(${i})" class="btn btn-success">Buka</button>`;
 
       const deleteBtn = currentRole === "ADMIN"
         ? `<button onclick="hapusMapel(${i})" class="btn btn-secondary" style="margin-left:4px;">Hapus</button>`
@@ -523,9 +537,9 @@
       tbody.innerHTML += `
         <tr>
           <td>${i + 1}</td>
-          <td><b>${m.nama}</b><br><a href="${m.link}" target="_blank" style="font-size:11px; color:#2563eb;">Cek Link Form ↗</a></td>
-          <td>Kelas ${m.tingkat}</td>
-          <td>${m.durasi} Menit<br><small>Token: <b>${m.token || "-"}</b></small></td>
+          <td><b>${m.nama}</b><br><a href="${m.link}" target="_blank" style="font-size:11px; color:#2563eb;">Cek Link ↗</a></td>
+          <td><b>${m.kelasTarget}</b></td>
+          <td>${m.durasi}m<br><small>Token: <b>${m.token || "-"}</b></small></td>
           <td>${statusBadge}</td>
           <td>${toggleBtn} ${deleteBtn}</td>
         </tr>
@@ -535,9 +549,9 @@
     document.getElementById("stat-mapel-aktif").innerText = aktifCount;
   }
 
-  // --- MONITORING & EXCEL ---
   function renderTable() {
     const keyword = document.getElementById("search-siswa").value.toLowerCase();
+    const filterKls = document.getElementById("filter-kelas").value;
     const tbody = document.getElementById("tbody-monitor");
     tbody.innerHTML = "";
     let langgar = 0;
@@ -545,7 +559,10 @@
     students.forEach((s, index) => {
       if (s.status === "Terkunci") langgar++;
 
-      if (s.nisn.includes(keyword) || s.nama.toLowerCase().includes(keyword) || s.kelas.toLowerCase().includes(keyword)) {
+      const matchKelas = !filterKls || s.kelas.toUpperCase() === filterKls.toUpperCase();
+      const matchKeyword = s.nisn.includes(keyword) || s.nama.toLowerCase().includes(keyword);
+
+      if (matchKelas && matchKeyword) {
         let badgeClass = "badge-warn";
         if (s.status === "Selesai") badgeClass = "badge-ok";
         if (s.status === "Terkunci") badgeClass = "badge-lock";
@@ -554,7 +571,7 @@
           <tr>
             <td><b>${s.nisn}</b></td>
             <td>${s.nama}</td>
-            <td>${s.kelas}</td>
+            <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">${s.kelas}</span></td>
             <td>${s.mapel || "-"}</td>
             <td><span class="badge ${badgeClass}">${s.status}</span></td>
             <td>${s.warn}x</td>
@@ -575,7 +592,7 @@
     students[idx].warn = 0;
     saveStudents();
     renderTable();
-    alert("Status siswa " + students[idx].nama + " berhasil di-reset!");
+    alert("Status siswa berhasil di-reset!");
   }
 
   function saveStudents() {
@@ -585,18 +602,18 @@
   function saveMaxWarn() {
     maxWarn = parseInt(document.getElementById("cfg-max-warn").value) || 3;
     localStorage.setItem("cbt_max_warn", maxWarn);
-    alert("Batas peringatan pelanggaran disimpan: " + maxWarn + "x");
+    alert("Batas peringatan disimpan!");
   }
 
   function downloadTemplateExcel() {
     const ws = XLSX.utils.json_to_sheet([
       { NISN: "0081234561", NAMA: "Ahmad Fauzi", KELAS: "X-1" },
       { NISN: "0081234562", NAMA: "Siti Aminah", KELAS: "XI-2" },
-      { NISN: "0081234563", NAMA: "Budi Santoso", KELAS: "XII-1" }
+      { NISN: "0081234563", NAMA: "Budi Santoso", KELAS: "XII-3" }
     ]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "DataSiswa");
-    XLSX.writeFile(wb, "Template_500_Siswa_SMAN1Rajabasa.xlsx");
+    XLSX.writeFile(wb, "Template_12_Rombel_SMAN1Rajabasa.xlsx");
   }
 
   function importExcel() {
@@ -620,7 +637,7 @@
       students = rows.map(r => ({
         nisn: String(r.NISN || r.nisn || "").trim(),
         nama: String(r.NAMA || r.Nama || r.nama || "Tanpa Nama").trim(),
-        kelas: String(r.KELAS || r.Kelas || r.kelas || "-").trim().toUpperCase(),
+        kelas: String(r.KELAS || r.Kelas || r.kelas || "X-1").trim().toUpperCase(),
         mapel: "-",
         status: "Belum Mulai",
         warn: 0,
@@ -629,7 +646,7 @@
 
       saveStudents();
       renderTable();
-      alert("Berhasil mengimpor " + students.length + " data siswa!");
+      alert("Berhasil mengimpor " + students.length + " data siswa dari 12 rombel!");
     };
     reader.readAsArrayBuffer(fileInput.files[0]);
   }
@@ -639,7 +656,7 @@
       No: i + 1,
       NISN: s.nisn,
       Nama_Siswa: s.nama,
-      Kelas: s.kelas,
+      Rombel_Kelas: s.kelas,
       Mata_Pelajaran: s.mapel,
       Status_Ujian: s.status,
       Pelanggaran: s.warn,
@@ -652,14 +669,13 @@
   }
 
   function resetAllData() {
-    if (confirm("Yakin ingin menghapus seluruh daftar siswa?")) {
+    if (confirm("Hapus seluruh data siswa?")) {
       students = [];
       saveStudents();
       renderTable();
     }
   }
 
-  // --- HALAMAN PILIH MAPEL SISWA ---
   function showPreExam() {
     document.getElementById("view-login").classList.add("hidden");
     document.getElementById("view-pre-exam").classList.remove("hidden");
@@ -668,21 +684,16 @@
     document.getElementById("info-nama").innerText = currentUser.nama;
     document.getElementById("info-kelas").innerText = currentUser.kelas;
 
-    // Deteksi tingkat kelas siswa (X, XI, atau XII)
-    let tingkatSiswa = "SEMUA";
-    const kls = currentUser.kelas.toUpperCase();
-    if (kls.startsWith("XII")) tingkatSiswa = "XII";
-    else if (kls.startsWith("XI")) tingkatSiswa = "XI";
-    else if (kls.startsWith("X")) tingkatSiswa = "X";
-
-    // Filter mapel yang statusnya DIBUKA (aktif) dan sesuai tingkat kelas
-    const available = subjects.filter(m => m.aktif && (m.tingkat === "SEMUA" || tingkatSiswa === "SEMUA" || m.tingkat === tingkatSiswa));
+    // Filter mapel yang DIBUKA dan target kelasnya cocok (SEMUA atau persis rombel siswa, misal X-1)
+    const klsSiswa = currentUser.kelas.toUpperCase();
+    const available = subjects.filter(m => m.aktif && (m.kelasTarget === "SEMUA" || m.kelasTarget.toUpperCase() === klsSiswa));
+    
     const listBox = document.getElementById("list-mapel-siswa");
     listBox.innerHTML = "";
 
     if (available.length === 0) {
       listBox.innerHTML = `<div style="padding:14px; background:#fef3c7; color:#92400e; border-radius:8px; font-size:13px; text-align:center;">
-        Belum ada jadwal mata pelajaran yang dibuka oleh Panitia untuk kelas Anda saat ini. Silakan tunggu instruksi pengawas.
+        Belum ada jadwal mata pelajaran yang dibuka untuk rombel <b>${currentUser.kelas}</b> saat ini. Silakan tunggu instruksi pengawas.
       </div>`;
       return;
     }
@@ -692,7 +703,7 @@
         <div class="mapel-item">
           <div>
             <div style="font-weight:700; color:var(--primary); font-size:14px;">${m.nama}</div>
-            <div style="font-size:12px; color:#64748b;">Tingkat: Kelas ${m.tingkat} • Durasi: ${m.durasi} Menit</div>
+            <div style="font-size:12px; color:#64748b;">Target: <b>${m.kelasTarget}</b> • Durasi: ${m.durasi} Menit</div>
           </div>
           <button onclick="selectMapel(${m.id})" class="btn btn-primary" style="width:auto; padding:8px 14px; font-size:12px;">Pilih</button>
         </div>
@@ -721,7 +732,7 @@
     if (selectedSubject.token) {
       const inputTok = document.getElementById("input-token").value.trim().toUpperCase();
       if (inputTok !== selectedSubject.token) {
-        alert("Token ujian salah! Silakan tanyakan token kepada pengawas ruang.");
+        alert("Token ujian salah!");
         return;
       }
     }
@@ -749,7 +760,7 @@
       updateTimerDisplay();
       if (remainingSeconds <= 0) {
         clearInterval(timerInterval);
-        alert("Waktu ujian telah habis! Sistem otomatis mengakhiri sesi.");
+        alert("Waktu ujian habis!");
         finishExam(true);
       }
     }, 1000);
@@ -762,7 +773,6 @@
       String(m).padStart(2, "0") + ":" + String(s).padStart(2, "0");
   }
 
-  // --- ANTI-CURANG ---
   document.addEventListener("visibilitychange", function() {
     if (document.hidden && isExamActive) triggerViolation();
   });
@@ -783,7 +793,7 @@
       saveStudents();
       document.getElementById("lock-screen").classList.remove("hidden");
     } else {
-      alert(`⚠️ PERINGATAN PELANGGARAN (${currentUser.warn}/${maxWarn})!\nAnda terdeteksi keluar dari aplikasi ujian. Jika mencapai ${maxWarn}x, ujian Anda akan TERKUNCI otomatis!`);
+      alert(`⚠️ PERINGATAN PELANGGARAN (${currentUser.warn}/${maxWarn})!\nAnda terdeteksi keluar dari aplikasi ujian!`);
     }
   }
 
@@ -796,16 +806,14 @@
       document.getElementById("lock-screen").classList.add("hidden");
       document.getElementById("unlock-pin").value = "";
       isExamActive = true;
-      alert("Kunci dibuka oleh Pengawas. Siswa dapat melanjutkan ujian.");
+      alert("Kunci dibuka.");
     } else {
-      alert("PIN Pengawas salah!");
+      alert("PIN Salah!");
     }
   }
 
   function finishExam(force = false) {
-    if (!force && !confirm("Apakah Anda yakin sudah mengirimkan jawaban di formulir dan ingin mengakhiri ujian?")) {
-      return;
-    }
+    if (!force && !confirm("Yakin ingin menyelesaikan ujian?")) return;
     isExamActive = false;
     clearInterval(timerInterval);
     currentUser.status = "Selesai";
@@ -815,7 +823,7 @@
     if (document.exitFullscreen) {
       document.exitFullscreen().catch(() => {});
     }
-    alert("Terima kasih! Sesi ujian Anda telah selesai dicatat.");
+    alert("Ujian selesai.");
     logout();
   }
 
