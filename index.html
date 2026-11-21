@@ -1007,6 +1007,7 @@
       }
     }
 
+    unlockSirenAudio();
     const elem = document.documentElement;
     if (elem.requestFullscreen) {
       elem.requestFullscreen().catch(() => {});
@@ -1051,8 +1052,60 @@
     if (isExamActive) triggerViolation();
   });
 
+  // Bunyi sirine otomatis (Web Audio API) tanpa file eksternal saat pelanggaran
+  let sirenAudioCtx = null;
+  let sirenStopTimeout = null;
+
+  function unlockSirenAudio() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!sirenAudioCtx) {
+        sirenAudioCtx = new AudioCtx();
+      }
+      if (sirenAudioCtx.state === "suspended") {
+        sirenAudioCtx.resume().catch(() => {});
+      }
+    } catch (e) {}
+  }
+
+  function playSirenAlert(durationMs = 3200) {
+    try {
+      unlockSirenAudio();
+      if (!sirenAudioCtx) return;
+      if (sirenAudioCtx.state === "suspended") {
+        sirenAudioCtx.resume().catch(() => {});
+      }
+
+      if (sirenStopTimeout) clearTimeout(sirenStopTimeout);
+
+      const osc = sirenAudioCtx.createOscillator();
+      const gain = sirenAudioCtx.createGain();
+      osc.type = "sawtooth";
+      gain.gain.setValueAtTime(0.35, sirenAudioCtx.currentTime);
+
+      const now = sirenAudioCtx.currentTime;
+      const step = 0.28;
+      const totalSteps = Math.max(2, Math.floor((durationMs / 1000) / step));
+      for (let i = 0; i < totalSteps; i++) {
+        const freq = i % 2 === 0 ? 880 : 620;
+        osc.frequency.setValueAtTime(freq, now + i * step);
+      }
+
+      osc.connect(gain);
+      gain.connect(sirenAudioCtx.destination);
+      osc.start(now);
+      osc.stop(now + durationMs / 1000);
+
+      sirenStopTimeout = setTimeout(() => {
+        try { osc.disconnect(); } catch (e) {}
+      }, durationMs + 100);
+    } catch (e) {}
+  }
+
   function triggerViolation() {
     if (!currentUser) return;
+    playSirenAlert(3200);
     currentUser.warn += 1;
     saveStudents();
 
